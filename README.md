@@ -24,7 +24,7 @@ To install BTCPay server with this google  cloud deployment template
 
 ## Setup gcloud tool
 In case you run the deploy script from local (PC or mac), you need to install gcloud tool. https://cloud.google.com/sdk/docs/
-(But, if you prefere the Google cloud shell, you dont need it.It's already there.)
+(But, if you prefer the Google cloud shell, you dont need it.It's already there.)
 
 Then, setup the gcloud environment by gcloud init command as prompted by installer.
 You will authenticate to connect google cloud with your google accout and set up the default project and default zone.
@@ -70,7 +70,7 @@ What dose this deployment script do ?
 ## Deploy
 
 Once you configure the yaml file. You are ready to  deploy it to GCP.
-It outpus the static IP address when it succeeded. The name passed after the deploy script can be anything and it becomes the name of the deployment, vm insntance name in GCE with suffix "-vm" and network name with suffix "-network"
+It outpus the static IP address when it succeeded. The name passed after the deploy script can be anything and it becomes the name of the deployment, vm instance name in GCE with suffix "-vm" and network name with suffix "-network"
 
 With bash,
 ```
@@ -80,14 +80,18 @@ With Powershell
 ```ps
 ./deploy.ps1 btcpaytest1
 ```
+![Run deploy script](images/gcloud-on-cloudshell.png)
 
-Then, Go to your DNS service and map the IP with your domainname.
+Then, Go to your DNS service and map the IP with your domain name.
 Now, you have to generate free SSL certificate with Let's encrypt.
-Go to Google Cloud console -> Compute Engine -> VM instances
-you will see the name of the deployment in the list of VMs.
-Click the ssh button and then become superuse by.
+It's easy. just ssh to the vm and run 1 command.  
+Go to Google Cloud console -> Compute Engine -> VM instances  
+You will see the name of the deployment with "-vm" appended in the list of VMs.
+![ssh from google cloud console](images/ssh-from-console.png)
+Click the ssh button of the vm and then become super user by
 ```
 sudo su -
+cd /btcpayserver-docker/
 ```
 change directory to /btcpay , and then run changedomain.sh with the domain name.
 
@@ -97,11 +101,11 @@ changedomain.sh btcpaytest1.mycompany.net
 
 ![How to change domain name and setup ssl certificate](images/changeDomain.png)
 
-Test the install by accessing https://<your host name> and signup the 1st user.
+Test the install by accessing https://\<your host name\> and signup the 1st user.
 
 ## Undeploy
 
-When you undeploy it, you can use undeploy script. It remove everything from vm to IP adress.
+When you undeploy it, you can use undeploy script. It remove everything from vm to IP address.
 
 With bash,
 ```
