@@ -1,10 +1,10 @@
 imports:
 - path: vm.jinja
-
 resources:
 - name: deploy-btcpay-vm-with-btcpay-server
   type: vm.jinja
   properties:
+    ############  EDIT PROPERTY START HERE ##############
     region: asia-northeast1
     zone: asia-northeast1-b
     vmtype: custom-1-7680-ext
@@ -12,9 +12,8 @@ resources:
     diskSizeGb: 500
     startup-script: |
         #!/bin/bash
-        ############  EDIT FIELD END HERE ##############
         ### mandatory settings ###
-        BTCPAY_HOST=btcpaytest8.indiesquare.net
+        BTCPAY_HOST=btcpaytest.mycompany.net
         NBITCOIN_NETWORK=testnet
         BTCPAYGEN_CRYPTO1=btc
         BTCPAYGEN_LIGHTNING=lnd
@@ -30,7 +29,7 @@ resources:
         ACME_CA_URI:=https://acme-staging.api.letsencrypt.org/directory
         #prune mode with 100Gb blockchain (1 year long blochchain)
         BTCPAYGEN_ADDITIONAL_FRAGMENTS="opt-save-storage"
-        ############  EDIT FIELD END HERE ##############
+        ############  EDIT PROPERTY END HERE ##############
         ### Script below
         if ! [ -x "$(command -v git)" ]; then
             apt-get update 2>error
