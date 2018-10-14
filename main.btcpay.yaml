@@ -1,0 +1,59 @@
+imports:
+- path: vm.jinja
+
+resources:
+- name: deploy-btcpay-vm-with-btcpay-server
+  type: vm.jinja
+  properties:
+    region: asia-northeast1
+    zone: asia-northeast1-b
+    vmtype: custom-1-7680-ext
+    linuxType: ubuntu-1604-lts
+    diskSizeGb: 500
+    startup-script: |
+        #!/bin/bash
+        ############  EDIT FIELD END HERE ##############
+        ### mandatory settings ###
+        BTCPAY_HOST=btcpaytest8.indiesquare.net
+        NBITCOIN_NETWORK=testnet
+        BTCPAYGEN_CRYPTO1=btc
+        BTCPAYGEN_LIGHTNING=lnd
+        ### optional settings (No need to set unless required) ###
+        LETSENCRYPT_EMAIL=
+        LIGHTNING_ALIAS=
+        BTCPAYGEN_CRYPTO2=
+        CUSTOM_SSH_KEY=
+        ### default settings(basically no need to change) ###
+        BTCPAY_DOCKER_REPO=https://github.com/btcpayserver/btcpayserver-docker
+        BTCPAY_DOCKER_REPO_BRANCH=master
+        BTCPAYGEN_REVERSEPROXY=nginx
+        ACME_CA_URI:=https://acme-staging.api.letsencrypt.org/directory
+        #prune mode with 100Gb blockchain (1 year long blochchain)
+        BTCPAYGEN_ADDITIONAL_FRAGMENTS="opt-save-storage"
+        ############  EDIT FIELD END HERE ##############
+        ### Script below
+        if ! [ -x "$(command -v git)" ]; then
+            apt-get update 2>error
+            apt-get install -y git 2>error
+        fi
+        # Setup SSH access via private key
+        ssh-keygen -t rsa -f /root/.ssh/id_rsa_btcpay -q -P ""
+        echo "# Key used by BTCPay Server" >> /root/.ssh/authorized_keys
+        cat /root/.ssh/id_rsa_btcpay.pub >> /root/.ssh/authorized_keys
+        if [[ "$CUSTOM_SSH_KEY" ]]; then
+            echo "" >> /root/.ssh/authorized_keys
+            echo "# User key" >> /root/.ssh/authorized_keys
+            echo "$CUSTOM_SSH_KEY" >> /root/.ssh/authorized_keys
+            echo "Custom SSH Key added to /root/.ssh/authorized_keys"
+        fi
+        sed -i -e '/^PasswordAuthentication / s/ .*/ no/' /etc/ssh/sshd_config
+        userdel -r -f temp
+        # Configure BTCPAY to have access to SSH
+        BTCPAY_HOST_SSHKEYFILE=/root/.ssh/id_rsa_btcpay
+        # Clone btcpayserver-docker
+        git clone $BTCPAY_DOCKER_REPO
+        cd btcpayserver-docker
+        git checkout $BTCPAY_DOCKER_REPO_BRANCH
+        . ./btcpay-setup.sh -i
+        [ -x "$(command -v /etc/init.d/sshd)" ] && nohup /etc/init.d/sshd restart &
+        [ -x "$(command -v /etc/init.d/ssh)" ] && nohup /etc/init.d/ssh restart &
