@@ -4,7 +4,7 @@ Instructions to deploy BTCPay Server in [production environment](https://github.
 
 The following instructions assume you have [Google Cloud](https://console.cloud.google.com) subscription.
 
-[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?git_repo=https%3A%2F%2Fgithub.com%2Fbtcpayserver%2Fbtcpayserver-googlecloud&page=editor)
+[![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?git_repo=https%3A%2F%2Fgithub.com%2Fhypergori%2Fbtcpayserver-googlecloud&page=editor)
 
 You can see our video for an overview: COMMING SOON!
 
