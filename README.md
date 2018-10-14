@@ -71,7 +71,7 @@ change directory to /btcpay , and then run changedomain.sh with the domain name.
 changedomain.sh btcpaytest1.mycompany.net
 ```
 
-[How to change domain name and setup ssl certificate](images/changeDomain.png)
+![How to change domain name and setup ssl certificate](images/changeDomain.png)
 
 
 ## Undeploy
