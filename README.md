@@ -13,14 +13,21 @@ You can see our video for an overview: COMMING SOON!
 You can find more details about the tooling install in the Virtual Machine in [the tooling section of BTCPayServer-Docker repository](https://github.com/btcpayserver/btcpayserver-docker/blob/master/README.md#tooling).
 
 ## Overview
-To install BTCPay server with this google  cloud deployment template
-1. Install gcloud sdk locally or use Google cloud shell on console with the link above 
-2. set the project to gcloud env, that the BTCPay instance belongs to.
-3. Modidy the instance and BTCPay's parameters in yaml file
-4. run deploy script and it shows static IP
-5. DO DNS setup with your Domain name provider (Google DNS, GOdaddy etc.)
-6. ssh into the vm instance and run changedoamin.sh
-7. access the https:<yourdomain> and sign up (1st user becomes admin user)
+To install BTCPay server with this google  cloud deployment template  
+1. Install gcloud sdk locally or use Google cloud shell on console with the link above   
+2. set the default project and zone to gcloud env where the BTCPay instance belongs  
+3. Modify the instance and BTCPay's parameters in yaml file  
+4. run deploy script and it shows static IP for DNS
+5. Do DNS setup with your Domain name provider (Google DNS, GOdaddy etc.)  
+6. ssh into the vm instance and run changedoamin.sh to setup free ssl certificate
+7. test to access the https:<yourdomain> and sign up (1st user becomes admin user)  
+
+## Setup gcloud tool
+In case you run the deploy script from local (PC or mac), you need to install gcloud tool. https://cloud.google.com/sdk/docs/
+(But, if you prefere the Google cloud shell, you dont need it.It's already there.)
+
+Then, setup the gcloud environment by gcloud init command as prompted by installer.
+You will authenticate to connect google cloud with your google accout and set up the default project and default zone.
 
 ## Modify parameters in the main.btcpay.yaml
 Either from your local gcloud environment or from Google console's gcloud environment, you have to customize your BTCPay server install parameters by modifying in the file.
@@ -52,7 +59,7 @@ Customze parameters are for experts only and change only when you know what you 
 
 ## What the Deployment script does
 What dose this deployment script do ? 
-1. It creates the VM instance as you configured in the yaml, that is CPU, Memory, Disk size.
+1. It creates the VM instance as you configured in the yaml, that is CPU, Memory, Disk size etc. It uses gcloud command under the hood.
 2. It creates 1 public static IP and attach it to the instance
 3. Install BTCPay server on the root directory as root using docker compose from BTCPay Github repo
 
@@ -62,10 +69,18 @@ What dose this deployment script do ?
 
 ## Deploy
 
-Once you configure the yaml file. You are ready to  deploy it to GCP. It outpus the static IP address.
+Once you configure the yaml file. You are ready to  deploy it to GCP.
+It outpus the static IP address when it succeeded. The name passed after the deploy script can be anything and it becomes the name of the deployment, vm insntance name in GCE with suffix "-vm" and network name with suffix "-network"
+
+With bash,
 ```
-./deploy btcpaytest1
+./deploy.sh btcpaytest1
 ```
+With Powershell
+```ps
+./deploy.ps1 btcpaytest1
+```
+
 Then, Go to your DNS service and map the IP with your domainname.
 Now, you have to generate free SSL certificate with Let's encrypt.
 Go to Google Cloud console -> Compute Engine -> VM instances
@@ -86,8 +101,14 @@ Test the install by accessing https://<your host name> and signup the 1st user.
 
 ## Undeploy
 
-when you undeploy it,
+When you undeploy it, you can use undeploy script. It remove everything from vm to IP adress.
+
+With bash,
 ```
-./undeploy btcpaytest1
+./undeploy.sh btcpaytest1
+```
+With Powershell
+```ps
+./undeploy.ps1 btcpaytest1
 ```
 
