@@ -4,7 +4,8 @@ if [ -z "$1" ]
     echo "Specify the name of deployment as an argument .e.g.  deploy.sh btcpaytest1"
     exit 1
 fi
-gcloud deployment-manager deployments create  $1 --config main.btcpay.yaml
+export deploymentname=$1
+gcloud deployment-manager deployments create  $deploymentname --config main.btcpay.yaml
 export staticip="`gcloud compute instances describe $deploymentname-vm | grep -Po 'natIP: \K(.*)'`"
 if [[ -z "$staticip" ]]; then
     echo 'Congratulations! BtcPay Deployment is completed.'

@@ -12,6 +12,15 @@ You can see our video for an overview: COMMING SOON!
 
 You can find more details about the tooling install in the Virtual Machine in [the tooling section of BTCPayServer-Docker repository](https://github.com/btcpayserver/btcpayserver-docker/blob/master/README.md#tooling).
 
+## Overview
+To install BTCPay server with this google  cloud deployment template
+1. Install gcloud sdk locally or use Google cloud shell on console with the link above 
+2. set the project to gcloud env, that the BTCPay instance belongs to.
+3. Modidy the instance and BTCPay's parameters in yaml file
+4. run deploy script and it shows static IP
+5. DO DNS setup with your Domain name provider (Google DNS, GOdaddy etc.)
+6. ssh into the vm instance and run changedoamin.sh
+7. access the https:<yourdomain> and sign up (1st user becomes admin user)
 
 ## Modify parameters in the main.btcpay.yaml
 Either from your local gcloud environment or from Google console's gcloud environment, you have to customize your BTCPay server install parameters by modifying in the file.
@@ -73,6 +82,7 @@ changedomain.sh btcpaytest1.mycompany.net
 
 ![How to change domain name and setup ssl certificate](images/changeDomain.png)
 
+Test the install by accessing https://<your host name> and signup the 1st user.
 
 ## Undeploy
 
