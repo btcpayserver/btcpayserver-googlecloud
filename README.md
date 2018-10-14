@@ -43,27 +43,41 @@ Customze parameters are for experts only and change only when you know what you 
 
 ## What the Deployment script does
 What dose this deployment script do ? 
-1. It creates the VM instance as you configured in the yaml. CPU, Memory, Disk size.
+1. It creates the VM instance as you configured in the yaml, that is CPU, Memory, Disk size.
 2. It creates 1 public static IP and attach it to the instance
-3. Install BTCPay server on the root directory as root using docker compose
+3. Install BTCPay server on the root directory as root using docker compose from BTCPay Github repo
 
 ## What the Deployment script does not do
 1. DNS ip mapping should be done manually in any DNS server of your choice
 2. then, ssl certificate generation should be done via ssh
 
-## Run the gcloud deployment script
+## Deploy
 
-Once you configure the yaml file. You are ready to  deploy it to GCP.
+Once you configure the yaml file. You are ready to  deploy it to GCP. It outpus the static IP address.
 ```
 ./deploy btcpaytest1
 ```
+Then, Go to your DNS service and map the IP with your domainname.
+Now, you have to generate free SSL certificate with Let's encrypt.
+Go to Google Cloud console -> Compute Engine -> VM instances
+you will see the name of the deployment in the list of VMs.
+Click the ssh button and then become superuse by.
+```
+sudo su -
+```
+change directory to /btcpay , and then run changedomain.sh with the domain name.
+
+```
+changedomain.sh btcpaytest1.mycompany.net
+```
+
+[How to change domain name and setup ssl certificate](images/changeDoamin.png)
+
+
+## Undeploy
 
 when you undeploy it,
 ```
 ./undeploy btcpaytest1
 ```
-
-## access from Google console 
-Go to Google Cloud console -> Compute Engine -> VM instances
-you will see the name of the deployment in the list of VMs.
 
