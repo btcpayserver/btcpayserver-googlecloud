@@ -9,7 +9,7 @@ gcloud deployment-manager deployments create  $deploymentname --config main.btcp
 echo "$deploymentname-vm was deployed." 
 sleep 5
 export staticip="`gcloud compute instances describe $deploymentname-vm | grep -Po 'natIP: \K(.*)'`"
-if [[ -z "$staticip" ]]; then
+if [[ ! -z "$staticip" ]]; then
     echo 'Congratulations! BtcPay Deployment is completed.'
     echo 'Now, do DNS mapping with static IP:' $staticip
     echo 'then, run change-domain.sh via ssh'
