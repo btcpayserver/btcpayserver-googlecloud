@@ -19,7 +19,7 @@ To install BTCPay server with this google  cloud deployment template
 3. Modify the instance and BTCPay's parameters in yaml file  
 4. run deploy script and it shows static IP for DNS
 5. Do DNS setup with your Domain name provider (Google DNS, GOdaddy etc.)  
-6. ssh into the vm instance and run changedoamin.sh to setup free ssl certificate
+6. ssh into the vm instance and run changedomain.sh to setup free ssl certificate
 7. test to access the https:<yourdomain> and sign up (1st user becomes admin user)  
 
 ## Setup gcloud tool
