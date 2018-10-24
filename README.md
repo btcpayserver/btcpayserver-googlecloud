@@ -21,7 +21,6 @@ To install BTCPay server with this google  cloud deployment template
 6. ssh into the vm instance and run changedomain.sh to setup free ssl certificate
 7. test to access https://\<yourdomain\> and sign up (1st registered user becomes the admin user)  
 
-
 ## Setup gcloud tool
 In case that you run the deploy script from local computer, you need to install gcloud sdk tool. https://cloud.google.com/sdk/docs/
 If you prefer the Google cloud shell, you dont need to install anything and what is better? You dont need update the sdk. It's already in the cloud .Just click the link above in this document. This document is written for google cloud shell, but it should be very similar to local gcloud sdk.
