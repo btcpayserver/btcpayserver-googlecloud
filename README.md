@@ -7,7 +7,7 @@ The following instructions assume you have [Google Cloud](https://console.cloud.
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?git_repo=https%3A%2F%2Fgithub.com%2Fbtcpayserver%2Fbtcpayserver-googlecloud&page=editor)
 
 You can see our video for an overview:  
-[![BTCPay - Google cloud shell Setup](https://i.ytimg.com/vi/LXwEuvHK9Aw/hqdefault.jpg)](https://youtu.be/LXwEuvHK9Aw "BTCPay - Google cloud shell Setup")
+[![BTCPay - Google cloud shell Setup](https://i.ytimg.com/vi/ltKUzFaer2g/hqdefault.jpg)](https://youtu.be/ltKUzFaer2g "BTCPay - Google cloud shell Setup")
 
 You can find more details about the tooling install in the Virtual Machine in [the tooling section of BTCPayServer-Docker repository](https://github.com/btcpayserver/btcpayserver-docker/blob/master/README.md#tooling).
 
