@@ -1,8 +1,10 @@
-# BTCPayServer Google Cloud
+# BTCPayServer on Google Cloud
 
 Instructions to deploy BTCPay Server in [production environment](https://github.com/btcpayserver/btcpayserver-docker/tree/master/Production) hosted in Google Cloud.
 
-The following instructions assume you have [Google Cloud](https://console.cloud.google.com) subscription.
+The following instructions assume 
+1. You already get a domain name from Google Cloud Domain e.g. hypergori.com
+2. You decided the hostname with the domain name  e.g. btcpay.hypergori.com
 
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?git_repo=https%3A%2F%2Fgithub.com%2Fbtcpayserver%2Fbtcpayserver-googlecloud&page=editor)
 
@@ -12,42 +14,56 @@ You can see our video for an overview:
 You can find more details about the tooling install in the Virtual Machine in [the tooling section of BTCPayServer-Docker repository](https://github.com/btcpayserver/btcpayserver-docker/blob/master/README.md#tooling).
 
 ## Overview
-To install BTCPay server with this google  cloud deployment template  
-1. Start Google cloud shell with the link above (or Install gcloud sdk local computer)
-2. set the default project and zone to gcloud env where the BTCPay instance belongs
-3. Modify the instance and BTCPay's parameters in yaml file
-4. run deploy script and it shows static IP assgined for later use, DNS
-5. Do DNS setup with your Domain name provider (Google DNS, GOdaddy etc.)  
-6. ssh into the vm instance and run changedomain.sh to setup free ssl certificate
-7. test to access https://\<yourdomain\> and sign up (1st registered user becomes the admin user)  
+To install BTCPay server with this google  cloud deployment template. Here is the steps
+   
+1. Click `Google Cloud Shell` the link above
+2. Create Google cloud project if you haven't and set default project 
+3. Set the server host name of your to-be-BCTPAY server in deploy.sh
+4. Run deploy script
+5. Test to access https://\<your host name> and sign up to sign up the admin user
 
 ## Setup gcloud tool
-In case that you run the deploy script from local computer, you need to install gcloud sdk tool. https://cloud.google.com/sdk/docs/
-If you prefer the Google cloud shell, you dont need to install anything and what is better? You dont need update the sdk. It's already in the cloud .Just click the link above in this document. This document is written for google cloud shell, but it should be very similar to local gcloud sdk.
+There are two ways to deploy from this document.
+1. deploy from Google Cloud shell
+2. deploy from your local computer
 
-Now, assuming that you have a google cloud shell running on your browser, you would notice this repo is automatically cloned and change-directory-ed to the folder. How cool ! Let's set up the default project and default zone.
+This document focuses only on #1 for brievity.
+
+In case that you run the deploy script from local computer, you need to install gcloud sdk tool. https://cloud.google.com/sdk/docs/, clone this github repo and follow the same steps basically.
+
+If you prefer the Google cloud shell, you dont need to install anything. It's already in the cloud shell environment. Just click the link above. 
+
+Let's get started !
+
+First, we need google cloud project if you haven't created. I assume you haven't. 
+Let's say the project name is 'btcpay-test'
 
 ```
-hypergori@cloudshell:~/btcpayserver-googlecloud$ gcloud config set project testproject
-Updated property [core/project].
-hypergori@cloudshell:~/btcpayserver-googlecloud (testproject)$ gcloud config set compute/zone asia-northeast1-b
-Updated property [compute/zone].
+$ cd btcpayserver-googlecloud
+$ gcloud projects create btcpay-test --set-as-default
 ```
+
+If you already have a project, set it as a default
+```
+$ gcloud config set project btcpay-test
+```
+
 
 ## Modify parameters in the main.btcpay.yaml
-Either from your local gcloud environment or from Google console's gcloud environment, you can customize your BTCPay server install parameters by modifying in the file.THe detail is the table below.
-The default config is,  
+You can customize your BTCPay server install parameters by modifying the file.
+The default configuration is,
 
-* region is asia-northeast1
-* zone is asia-northeast1-b
-* 1 vCPU with 7.6G Memory 
+* hostname :  btcpay.hypergori.com
+* region : us-west1
+* zone : us-west1-a
+* vm instance type : e2-medium (1 vCPU with 4G Memory)
+* linux : ubuntu 20.04 LTS
 * boot disksize : 500GB
-* bitcoin testnet
-* use lnd
-* temporary Hostname is btcpaytest.mycompany.net (will change it later)
+* bitcoin network: mainnet
+* lightning implementation: lnd
 * prune mode with 1 year data
 
-![config yaml](images/yaml.png)
+![config yaml](images/deployment-script.png)
 
 ### Parameters
 Mandatory fields in the red rectangle above are required and you have to decide what to set.
@@ -58,89 +74,58 @@ Customze parameters are for experts only and change only when you know what you 
 | ------------- | ------------- |------------- | ------------- | 
 | Mandatory| region  | Region to deploy  | asia-northeast1|
 | Mandatory| zone | Zone to deploy | asia-northeast1-b |
-| Mandatory| vmtype | [vm type,f1-micro etc or custom-numOfCpu-memInMeg-ext](https://cloud.google.com/compute/docs/machine-types)  | custom-1-7680-ext |
+| Mandatory| vmtype | [vm type](https://cloud.google.com/compute/docs/machine-types)  | e2-medium |
 | Mandatory| diskSizeGb | root disk size in GB | 500 |
 | Mandatory| BTCPAY_HOST  | host name of the btcpay server | btcpaytest.mycompany.net|
-| Mandatory| NBITCOIN_NETWORK | [network type](https://github.com/btcpayserver/btcpayserver-docker/tree/master/Production) | testnet |
+| Mandatory| NBITCOIN_NETWORK | [network type](https://github.com/btcpayserver/btcpayserver-docker/tree/master/Production) | mainnet |
 | Mandatory| BTCPAYGEN_CRYPTO1 | crypto currecy | btc |
 | Mandatory| BTCPAYGEN_LIGHTNING | lightning implementation type (lnd or c-lightning) | lnd |
 | Optional| LETSENCRYPT_EMAIL | email notified by  let's encrypt free SSL | |
 | Optional| LIGHTNING_ALIAS | lightning node's alias | |
 | Optional| BTCPAYGEN_CRYPTO2 | other crypto currency, ltc ,btg | |
-| Optional| CUSTOM_SSH_KEY | ssh public key   |  |  |
 | Customize| BTCPAYGEN_ADDITIONAL_FRAGMENTS | [bitcoind prune config](https://github.com/btcpayserver/btcpayserver-docker/blob/master/README.md#generated-docker-compose-) | opt-save-storage |
 | Customize| BTCPAY_DOCKER_REPO | btcpay github repo |https://github.com/btcpayserver/btcpayserver-docker |
 | Customize| BTCPAY_DOCKER_REPO_BRANCH | btcpay github repo branch |master |
 | Customize| BTCPAYGEN_REVERSEPROXY | reverse proxy |nginx |
 | Customize| ACME_CA_URI | let's encrpt url |https://acme-staging.api.letsencrypt.org/directory |
 
-## What the Deployment script does
-It would cost USD 70 with above default config,and you can adjust the config in yaml.  
-What dose this deployment script do ? 
-1. It creates the VM instance as you configured in the yaml, that is CPU, Memory, Disk size. It runs gcloud command under the hood.
-2. It creates 1 public static IP and attach it to the instance
-3. Install BTCPay server on the root directory as root using docker compose from BTCPay Github repo
+## let's undetstand what the Deployment script does
+1. It creates the VM instance as you configured in the yaml, that is CPU, Memory, Disk size. 
+2. create hostname of your domain zone in Google DNS
+3. It creates 1 public static IP and attached to the hostname
+4. On the VM side, install BTCPay server as root using docker compose from BTCPay Github repo
+5. setup SSL certificate for free! with let's encrypt.
 
-## What the Deployment script does not do
-1. DNS ip mapping should be done manually by yourself at any DNS service of your choice
-2. Also, ssl certificate generation should be done via ssh from Google cloud console
+It would cost USD 45 with above default vm machine, excluding Domain name cost and DNS (12 bucks?).
+You can adjust the vm machine spec by changing vmtype. 
 
-## Deploy
-
-Once you configure the yaml file. You are ready to deploy it to GCP.
+## Deploy VM instance
+Once you configure the configuration in deployment.sh You are ready to deploy it to GCP.
 Do "chmod" to the shell scripts and run it.
 ```
-chmod 755 *.sh
-./deploy btcpaytest1
+chmod 755 *.sh && ./deploy
 ```
-Around 1 minute later, it outputs the static IP address when it succeeded. If you failed or made mistake on config. you can easily cleanup by undeploy.sh .  
- The name passed after the deploy shell script can be anything and it becomes the name of the deployment, vm instance name in GCE with suffix "-vm" and network name with suffix "-network"
+Around 3+ minutes later, it will say "vm was deployed. Access the url."
+But it may take a few more minuts because docker compose download many of docker images of BTCPay components.
+Also, it talks to Let's encrypt and have it verify the host name is legitimit and issue SSL certification and install.
 
-With bash,
-```
-./deploy.sh btcpaytest1
-```
-With Powershell
-```ps
-./deploy.ps1 btcpaytest1
-```
-![Run deploy script](images/gcloud-on-cloudshell.png)
+
+![Run deploy script](images/google-cloud-shell.png)
 
 
 ## UnDeploy
-With bash,
+With bash, pass the host name. 
 ```
-./undeploy.sh btcpaytest1
-```
-With Powershell
-```ps
-./undeploy.ps1 btcpaytest1
+./undeploy.sh btcpay.hypergori.com
 ```
 
 ## DNS Mapping and generate ssl certificate
 
-Then, Go to your DNS service and map the IP with your domain name. 
+This will be done automatically by the deployment script.
 
-Now, you want to generate free SSL certificate with Let's encrypt.
-It's easy. just ssh to the vm and run 1 command.  
-Go to Google Cloud console -> Compute Engine -> VM instances  
-You will see the name of the deployment with "-vm" appended in the list of VMs.
-![ssh from google cloud console](images/ssh-from-console.png)
-Click the ssh button of the vm and then become super user by
-```
-sudo su -
-cd /btcpayserver-docker/
-```
-change directory to /btcpay , and then run changedomain.sh with the domain name.
 
-```
-changedomain.sh your.newdmain.name
-```
-
-![How to change domain name and setup ssl certificate](images/changeDomain.png)
-
-Test the install by accessing https://\<your host name\> and signup the 1st user.
-You will see the BTCPay top page.
+Test the install by accessing https://\<your host name\> and signup the first user who becomes the powerful admin user. So, Don't let the server runing without creating the user.
+You will see the BTCPay top page like this. 
 
 ![Conglatulation!](images/BTCPay_top.png)
 
