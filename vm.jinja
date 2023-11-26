@@ -57,7 +57,6 @@ resources:
       accessConfigs:
       - name: External
         type: ONE_TO_ONE_NAT
-        natIP: $(ref.{{ env["deployment"] }}-address.address)
     tags:
       fingerprint: 6smc4R4d39I=
       items:

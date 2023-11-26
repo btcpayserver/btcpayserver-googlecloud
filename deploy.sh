@@ -45,6 +45,12 @@ if [[ ${answer^} != "Y" ]]; then
   echo "Sorry. Please fix host name or me! Exit."
   exit
 fi
+# check GCP project is set
+if [ -z "${GOOGLE_CLOUD_PROJECT}"]; then
+  echo "Please set GCP project."
+  echo "for example, gcloud config set project PROJECT_NAME"
+  exit
+fi
 
 echo "start deployment"
 gcloud deployment-manager deployments describe  $deployment_id &> /dev/null
