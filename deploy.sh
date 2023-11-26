@@ -8,6 +8,7 @@ zone:us-west1-a
 vmtype:e2-medium
 linuxType:ubuntu-2004-lts
 diskSizeGb:500
+diskType:pd-balanced
 bitcoin-core-network:mainnet
 crypt-1:btc
 crypt-2: 
@@ -16,9 +17,9 @@ letsencrypt-email:hypergori@gmail.com
 lightning-alias:
 )
 
-#concat configs with delimiter
+#convert config array to delimited string as properies for deployment-manager command
 CONFIGS=$(IFS=, eval 'echo "${CONFIG[*]}"')
-
+#find host name from config
 for element in "${CONFIG[@]}"
 do
     if [[ $element =~ btcpay_host ]]; then
@@ -27,8 +28,8 @@ do
 done
 
 deployment_id=${deployment_host//./-}
-arr=(${deployment_host//./ })
-deployment_domain=${arr[1]}.${arr[2]}
+domain_array=(${deployment_host//./ })
+deployment_domain=${domain_array[1]}.${domain_array[2]}
 domain_zone=${deployment_domain//./-}
 vm_name=${deployment_id}-vm
 
@@ -51,6 +52,7 @@ if [ $? -eq 0 ]; then
   echo "deleting existing deployment: $deployment_id"
   gcloud deployment-manager deployments delete  $deployment_id
 fi
+
 echo "creating deployment"
 gcloud deployment-manager deployments create  $deployment_id --template vm.jinja --properties $CONFIGS
 

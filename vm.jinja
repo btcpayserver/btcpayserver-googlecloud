@@ -51,6 +51,7 @@ resources:
       initializeParams:
         sourceImage: projects/ubuntu-os-cloud/global/images/family/{{properties["linuxType"]}}
         diskSizeGb: {{properties["diskSizeGb"]}}
+        diskType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/diskTypes/{{properties["diskType"]}}
     networkInterfaces:
     - network: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
       accessConfigs:
