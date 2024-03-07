@@ -13,7 +13,36 @@ resources:
       items:
       - key: startup-script
         value: |
-          {{ properties["startup-script"]|indent(10) }}
+          #!/bin/bash
+          ### mandatory settings ###
+          BTCPAY_HOST={{  properties["btcpay_host"] }}
+          NBITCOIN_NETWORK={{ properties["bitcoin-core-network"] }}
+          BTCPAYGEN_CRYPTO1={{ properties["crypt-1"] }}
+          BTCPAYGEN_LIGHTNING={{ properties["lightning-server"] }}
+          ### optional settings (No need to set unless required) ###
+          LETSENCRYPT_EMAIL={{ properties["letsencrypt-email"] }}
+          LIGHTNING_ALIAS={{ properties["lightning-alias"] }}
+          BTCPAYGEN_CRYPTO2={{ properties["crypt-2"] }}
+          ### default settings(basically no need to change) ###
+          BTCPAY_DOCKER_REPO=https://github.com/btcpayserver/btcpayserver-docker
+          BTCPAY_DOCKER_REPO_BRANCH=master
+          BTCPAYGEN_REVERSEPROXY=nginx
+          ACME_CA_URI:=https://acme-staging.api.letsencrypt.org/directory
+          #prune mode with 100Gb blockchain (1 year long blochchain)
+          BTCPAYGEN_ADDITIONAL_FRAGMENTS="opt-save-storage"
+          ############  EDIT PROPERTY END HERE ##############
+          ### Script to install BTCPay below
+          if ! [ -x "$(command -v git)" ]; then
+              apt-get update 2>error
+              apt-get install -y git 2>error
+          fi
+          # Clone btcpayserver-docker
+          git clone $BTCPAY_DOCKER_REPO
+          cd btcpayserver-docker
+          git checkout $BTCPAY_DOCKER_REPO_BRANCH
+          # Wait for DNS mapping is done at Goole cloud
+          sleep 30
+          . ./btcpay-setup.sh -i
     disks:
     - deviceName: boot
       type: PERSISTENT
@@ -22,9 +51,14 @@ resources:
       initializeParams:
         sourceImage: projects/ubuntu-os-cloud/global/images/family/{{properties["linuxType"]}}
         diskSizeGb: {{properties["diskSizeGb"]}}
+        diskType: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/zones/{{ properties["zone"] }}/diskTypes/{{properties["diskType"]}}
     networkInterfaces:
     - network: https://www.googleapis.com/compute/v1/projects/{{ env["project"] }}/global/networks/default
       accessConfigs:
       - name: External
         type: ONE_TO_ONE_NAT
-        natIP: $(ref.{{ env["deployment"] }}-address.address)
+    tags:
+      fingerprint: 6smc4R4d39I=
+      items:
+      - http-server
+      - https-server
